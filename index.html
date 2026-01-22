@@ -498,12 +498,50 @@
         font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em;
         color: var(--accent); text-shadow: 0 0 8px; opacity: 0.9;
     }
+
+    #manualBtn {
+        position: absolute; top: 20px; right: 20px;
+        background: transparent; border: 1px solid var(--accent-cyan);
+        color: var(--accent-cyan); padding: 5px 15px; cursor: pointer;
+        font-family: inherit; font-size: 0.8rem; letter-spacing: 1px;
+        transition: 0.3s; z-index: 1000;
+    }
+    #manualBtn:hover {
+        background: var(--accent-cyan); color: #000; box-shadow: 0 0 10px var(--accent-cyan);
+    }
+
+    .modal {
+        display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+        width: 100%; height: 100%; overflow: auto;
+        background-color: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+        animation: fade-in 0.3s;
+    }
+    .modal-content {
+        background-color: rgba(0, 20, 10, 0.95); margin: 5% auto; padding: 30px;
+        border: 1px solid var(--accent-cyan); width: 80%; max-width: 800px;
+        color: #eee; box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        position: relative;
+    }
+    .close-manual {
+        color: #aaa; float: right; font-size: 28px; font-weight: bold;
+        cursor: pointer; transition: 0.3s;
+    }
+    .close-manual:hover { color: var(--accent-cyan); text-shadow: 0 0 10px var(--accent-cyan); }
+    
+    .manual-section { margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; }
+    .manual-section h3 { color: var(--accent-cyan); margin-top: 0; border-left: 3px solid var(--accent-cyan); padding-left: 10px; }
+    .manual-section ul { padding-left: 20px; color: #ccc; }
+    .manual-section li { margin-bottom: 5px; }
+    .tag { display: inline-block; padding: 2px 6px; font-size: 0.7em; border-radius: 3px; border: 1px solid; margin-right: 5px; font-weight: bold; }
+    .tag.cut { border-color: var(--danger-red); color: var(--danger-red); }
+    .tag.hold { border-color: var(--warn-orange); color: var(--warn-orange); }
+    .tag.pass { border-color: var(--text-bright); color: var(--text-bright); }
 </style>
 </head>
 <body>
 
 <h1>Danger Sensor v1.0 // Physical Boundary Protocol</h1>
-
+<button id="manualBtn">? SYSTEM MANUAL</button>
 <div class="preset-bar">
     <button class="preset-btn" data-preset="STRICT">STRICT</button>
     <button class="preset-btn active" data-preset="DEFAULT">DEFAULT</button>
@@ -541,7 +579,39 @@
         </div>
     </div>
 </div>
+<div id="manualModal" class="modal">
+    <div class="modal-content">
+        <span class="close-manual">&times;</span>
+        <h2 style="text-align:center; color:var(--text-bright); border-bottom:1px solid #444; padding-bottom:10px;">SYSTEM MANUAL</h2>
 
+        <div class="manual-section">
+            <h3>1. CORE CONCEPT</h3>
+            <p>This sensor detects "Physical Boundaries" (Geometry), not Qualia. It acts as a gatekeeper to reject corrupted data before human review.</p>
+        </div>
+
+        <div class="manual-section">
+            <h3>2. DECISION CODES</h3>
+            <ul>
+                <li><span class="tag cut">CUT</span> <strong>CRITICAL FAILURE:</strong> Immediate rejection required. (e.g., Clipping > 0.1%, No numbers in spec)</li>
+                <li><span class="tag hold">HOLD</span> <strong>WARNING:</strong> Boundary violation detected. Human verification needed. (e.g., Suspicious dynamics, Missing responsibility clauses)</li>
+                <li><span class="tag pass">PASS</span> <strong>CLEAN:</strong> Data is within the defined physical safety protocol.</li>
+            </ul>
+        </div>
+
+        <div class="manual-section">
+            <h3>3. PRESETS</h3>
+            <ul>
+                <li><strong>STRICT:</strong> For Broadcast/Finance. Zero tolerance.</li>
+                <li><strong>DEFAULT:</strong> Standard Production balance.</li>
+                <li><strong>LENIENT:</strong> For Demos/Roughs. Prevents only fatal errors.</li>
+            </ul>
+        </div>
+
+        <div style="text-align:center; font-size:0.8em; color:#666; margin-top:20px;">
+            DANGER SENSOR v1.0 // THREE-PILLAR PROTOCOL
+        </div>
+    </div>
+</div>
 <div class="footer-info">
     DANGER SENSOR v1.0 | Three-Pillar Protocol: Pinching・Boundary Temporal Asymmetry・Readout<br>
     Logs: Browser LocalStorage (export via Console: `dangerSensor.exportLogs()`)
@@ -922,6 +992,22 @@ dropZone.ondrop = (e) => {
 };
 
 document.getElementById("textBtn").onclick = processText;
+// === MANUAL MODAL LOGIC ===
+const modal = document.getElementById("manualModal");
+const btn = document.getElementById("manualBtn");
+const span = document.getElementsByClassName("close-manual")[0];
+
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+span.onclick = function() {
+    modal.style.display = "none";
+}
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
 </script>
 </body>
 </html><!DOCTYPE html>
