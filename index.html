@@ -536,10 +536,22 @@
     .tag.cut { border-color: var(--danger-red); color: var(--danger-red); }
     .tag.hold { border-color: var(--warn-orange); color: var(--warn-orange); }
     .tag.pass { border-color: var(--text-bright); color: var(--text-bright); }
+
+    @media (max-width: 768px) {
+        #manualBtn {
+            position: static;
+            display: block;
+            margin: 0 auto 20px auto;
+            width: fit-content;
+        }
+
+        h1 {
+            margin-top: 10px;
+        }
+    }
 </style>
 </head>
 <body>
-
 <h1>Danger Sensor v1.0 // Physical Boundary Protocol</h1>
 <button id="manualBtn">? SYSTEM MANUAL</button>
 <div class="preset-bar">
@@ -606,12 +618,12 @@
                 <li><strong>LENIENT:</strong> For Demos/Roughs. Prevents only fatal errors.</li>
             </ul>
         </div>
-
         <div style="text-align:center; font-size:0.8em; color:#666; margin-top:20px;">
             DANGER SENSOR v1.0 // THREE-PILLAR PROTOCOL
         </div>
     </div>
 </div>
+
 <div class="footer-info">
     DANGER SENSOR v1.0 | Three-Pillar Protocol: Pinching・Boundary Temporal Asymmetry・Readout<br>
     Logs: Browser LocalStorage (export via Console: `dangerSensor.exportLogs()`)
