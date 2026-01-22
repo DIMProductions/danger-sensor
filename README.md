@@ -49,7 +49,7 @@ Identifies legal and operational boundaries that define the "In-Scope" and "Out-
 
 ## 🎮 Try It Online
 
-👉 **[https://danger-sensor.pages.dev](https://www.google.com/search?q=https://danger-sensor.pages.dev)**
+👉 **[https://danger-sensor.dim.productions](https://danger-sensor.dim.productions/)**
 
 Drag and drop your files or paste text to initialize the boundary scan.
 
