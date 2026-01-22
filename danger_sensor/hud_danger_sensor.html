@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DANGER SENSOR v1.0</title>
+<style>
+:root{--bg-color:#020205;--panel-bg:rgba(0,30,10,0.2);--text-primary:hsl(120,80%,60%);--text-bright:hsl(120,100%,70%);--border-color:hsl(120,100%,30%);--accent-cyan:#0ff;--danger-red:#f33;--warn-orange:#f90;--hud-glow:0 0 4px rgba(0,255,100,0.3),inset 0 0 10px rgba(0,20,0,0.5)}
+body{background:var(--bg-color);color:var(--text-primary);font-family:"Courier New",monospace;margin:0;padding:20px;min-height:100vh;box-sizing:border-box;background-image:linear-gradient(rgba(0,255,100,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,100,0.03) 1px,transparent 1px),linear-gradient(rgba(0,10,0,0.5) 50%,transparent 50%);background-size:50px 50px,50px 50px,100% 4px;text-shadow:0 0 2px rgba(0,255,100,0.5);animation:bootup 2s ease-out forwards;opacity:0}
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background:radial-gradient(circle,transparent 60%,#000 150%),conic-gradient(from 0deg at 95% 5%,transparent 0deg,rgba(0,255,100,0.05) 60deg,transparent 120deg);pointer-events:none;z-index:100;animation:radar-sweep 4s linear infinite}
+@keyframes bootup{0%{opacity:0;filter:blur(20px)}50%{opacity:0.5}100%{opacity:1;filter:blur(0)}}
+@keyframes radar-sweep{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+@keyframes glitch{0%,90%,100%{text-shadow:0 0 2px rgba(0,255,100,0.5)}92%{text-shadow:2px 0 2px #f0f,-2px 0 2px #0ff;transform:translateX(2px)}94%{text-shadow:-2px 0 2px #f0f,2px 0 2px #0ff;transform:translateX(-2px)}96%{text-shadow:0 0 2px rgba(0,255,100,0.5);transform:translateX(0)}}
+h1{text-transform:uppercase;letter-spacing:0.1em;border-bottom:2px solid var(--border-color);padding-bottom:10px;margin-bottom:30px;color:var(--text-bright);text-align:center;position:relative;animation:glitch 3s infinite alternate-reverse}
+h1::after{content:"PINCHING PROTOCOL ACTIVE";position:absolute;bottom:-25px;right:0;font-size:0.7rem;color:var(--border-color);opacity:0.7;animation:blink 2s infinite}
+h1::before{content:"◢◣ PHYSICAL BOUNDARY DETECTION ◥◤";position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-size:0.6rem;color:var(--accent-cyan);opacity:0.5;letter-spacing:0.3em}
+.preset-bar{display:flex;justify-content:center;gap:10px;margin-bottom:30px;padding:15px;background:var(--panel-bg);border:1px solid var(--border-color)}
+.preset-btn{padding:10px 20px;background:rgba(0,40,10,0.5);color:var(--text-primary);border:1px solid var(--border-color);cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:1px;transition:0.2s}
+.preset-btn:hover{background:rgba(0,60,20,0.7);box-shadow:0 0 10px var(--border-color)}
+.preset-btn.active{background:var(--border-color);color:#000;box-shadow:0 0 20px var(--text-bright);font-weight:bold}
+.container{display:grid;grid-template-columns:1fr 1fr;gap:30px;max-width:1200px;margin:0 auto}
+@media(max-width:768px){.container{grid-template-columns:1fr}}
+.sensor-box{background:var(--panel-bg);border:1px solid var(--border-color);padding:25px;position:relative;box-shadow:var(--hud-glow);animation:panel-init 1.5s ease-out forwards;opacity:0}
+.sensor-box:nth-child(1){animation-delay:0.3s}
+.sensor-box:nth-child(2){animation-delay:0.6s}
+@keyframes panel-init{0%{opacity:0;transform:perspective(1000px) rotateY(10deg)}100%{opacity:1;transform:perspective(1000px) rotateY(0deg)}}
+.sensor-box::before,.sensor-box::after,.sensor-box>h2::before,.sensor-box>h2::after{content:"";position:absolute;width:10px;height:10px;border:solid var(--text-bright);animation:corner-pulse 2s ease-in-out infinite}
+.sensor-box::before{top:-1px;left:-1px;border-width:2px 0 0 2px}
+.sensor-box::after{bottom:-1px;right:-1px;border-width:0 2px 2px 0;animation-delay:0.5s}
+.sensor-box>h2::before{top:-27px;right:-27px;border-width:2px 2px 0 0;animation-delay:1s}
+.sensor-box>h2::after{bottom:-27px;left:-27px;border-width:0 0 2px 2px;animation-delay:1.5s}
+@keyframes corner-pulse{0%,100%{opacity:1;box-shadow:0 0 0px var(--text-bright)}50%{opacity:0.4;box-shadow:0 0 8px var(--text-bright)}}
+h2{margin-top:0;text-transform:uppercase;color:var(--accent-cyan);border-bottom:1px dashed var(--border-color);padding-bottom:5px;display:inline-block;position:relative;animation:text-flicker 4s infinite}
+h2::after{content:"▸";position:absolute;right:-20px;animation:blink 1s infinite}
+@keyframes text-flicker{0%,98%,100%{opacity:1}99%{opacity:0.8}}
+.drop-zone{border:2px dashed var(--border-color);padding:40px;text-align:center;cursor:pointer;transition:0.3s;background:rgba(0,20,0,0.4);margin-bottom:20px;color:var(--text-bright)}
+.drop-zone:hover,.drop-zone.dragover{background:rgba(0,50,20,0.6);box-shadow:0 0 15px var(--border-color);border-style:solid}
+textarea{width:100%;height:150px;background:rgba(0,0,0,0.7);color:var(--text-primary);border:1px solid var(--border-color);font-family:inherit;padding:10px;box-sizing:border-box;resize:vertical}
+textarea:focus{outline:none;box-shadow:0 0 10px var(--border-color);border-color:var(--text-bright)}
+button#textBtn{width:100%;padding:12px;background:rgba(0,40,10,0.5);color:var(--text-bright);border:1px solid var(--border-color);cursor:pointer;margin-top:15px;font-family:inherit;text-transform:uppercase;letter-spacing:1px;transition:0.2s;position:relative;overflow:hidden}
+button#textBtn:hover{background:var(--border-color);color:#000;box-shadow:0 0 20px var(--border-color)}
+button#textBtn:active{animation:btn-pulse 0.3s ease-out}
+button#textBtn::after{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(to right,transparent,rgba(255,255,255,0.4),transparent);transform:rotate(45deg);transition:0.5s;opacity:0}
+button#textBtn:hover::after{left:100%;opacity:1;transition:0.8s}
+@keyframes btn-pulse{0%{transform:scale(1);box-shadow:0 0 20px var(--border-color)}50%{transform:scale(0.95);box-shadow:0 0 40px var(--text-bright)}100%{transform:scale(1);box-shadow:0 0 20px var(--border-color)}}
+.result{margin-top:20px;border-top:2px solid var(--border-color);padding-top:20px;display:none;animation:result-slide 0.5s ease-out}
+@keyframes result-slide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.decision-wrapper{text-align:center;margin-bottom:20px;border:2px solid;padding:10px;background:rgba(0,0,0,0.5);position:relative;overflow:hidden}
+.decision-wrapper::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.1),transparent);animation:scan-horizontal 2s ease-in-out infinite}
+@keyframes scan-horizontal{0%{left:-100%}100%{left:100%}}
+.decision{font-size:3rem;font-weight:bold;text-shadow:0 0 10px currentColor;animation:pulse 1.5s infinite alternate;position:relative;z-index:1}
+.decision.PASS{color:var(--text-bright);border-color:var(--text-bright)}
+.decision.HOLD{color:var(--warn-orange);border-color:var(--warn-orange);animation:pulse 1.5s infinite alternate,shake 0.5s infinite}
+.decision.CUT{color:var(--danger-red);border-color:var(--danger-red);animation:blinkr 0.5s infinite alternate,shake 0.3s infinite}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-2px)}75%{transform:translateX(2px)}}
+@keyframes blinkr{0%,100%{opacity:1;text-shadow:0 0 20px var(--danger-red)}50%{opacity:0.5;text-shadow:none}}
+@keyframes pulse{from{text-shadow:0 0 10px currentColor;transform:scale(1)}to{text-shadow:0 0 20px currentColor,0 0 30px currentColor;transform:scale(1.05)}}
+#audioReasons,#textReasons{color:var(--accent-cyan);margin-bottom:15px;font-size:0.9rem;text-align:center;position:relative;padding-left:20px}
+#audioReasons::before,#textReasons::before{content:"[DIAGNOSTIC] ";opacity:0.7;position:absolute;left:0;animation:blink 1.5s infinite}
+.alert-box{background:rgba(255,0,0,0.1);border:2px solid var(--danger-red);padding:15px;margin-bottom:15px;text-align:center;font-weight:bold;color:var(--danger-red);animation:alert-pulse 1s infinite;display:none}
+.alert-box.show{display:block}
+@keyframes alert-pulse{0%,100%{box-shadow:0 0 10px var(--danger-red)}50%{box-shadow:0 0 30px var(--danger-red),inset 0 0 20px rgba(255,0,0,0.3)}}
+table{width:100%;border-collapse:separate;border-spacing:0 4px;font-size:0.85rem}
+tr{background:rgba(0,20,20,0.3);transition:0.3s;animation:row-appear 0.3s ease-out backwards}
+tr:hover{background:rgba(0,40,40,0.5);box-shadow:inset 0 0 10px rgba(0,255,100,0.2)}
+tr:nth-child(1){animation-delay:0.1s}
+tr:nth-child(2){animation-delay:0.2s}
+tr:nth-child(3){animation-delay:0.3s}
+tr:nth-child(4){animation-delay:0.4s}
+tr:nth-child(5){animation-delay:0.5s}
+tr:nth-child(6){animation-delay:0.6s}
+tr:nth-child(7){animation-delay:0.7s}
+@keyframes row-appear{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+td{padding:6px 10px;border:none}
+td:first-child{color:var(--accent-cyan);text-transform:uppercase;border-left:2px solid var(--border-color);position:relative;padding-left:20px}
+td:first-child::before{content:"▸";position:absolute;left:5px;opacity:0.5;animation:blink 2s infinite}
+td:last-child{text-align:right;font-weight:bold;color:var(--text-bright);border-right:2px solid var(--border-color)}
+td.violation{color:var(--danger-red)!important;animation:blink 1s infinite}
+td.warning{color:var(--warn-orange)!important}
+.log-status{margin-top:10px;padding:8px;background:rgba(0,255,100,0.1);border:1px solid var(--border-color);font-size:0.75rem;text-align:center;color:var(--text-bright);display:none}
+.log-status.show{display:block;animation:fade-in 0.3s}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+.footer-info{margin-top:40px;padding:20px;border-top:1px solid var(--border-color);text-align:center;font-size:0.8rem;opacity:0.6}
+</style>
+</head>
+<body>
+<h1>Danger Sensor v1.0 // Physical Boundary Protocol</h1>
+<div class="preset-bar">
+<button class="preset-btn" data-preset="STRICT">STRICT</button>
+<button class="preset-btn active" data-preset="DEFAULT">DEFAULT</button>
+<button class="preset-btn" data-preset="LENIENT">LENIENT</button>
+</div>
+<div class="container">
+<div class="sensor-box">
+<h2>Audio Integrity Scanner</h2>
+<div class="drop-zone" id="audioDrop">>>> INITIALIZE WAVEFORM ANALYSIS <<<
+<br><span style="font-size:0.8em;opacity:0.7">[DROP WAV FILE OR CLICK]</span>
+<input type="file" id="audioInput" accept=".wav" style="display:none"></div>
+<div id="audioResult" class="result">
+<div class="alert-box" id="audioAlert">⚠ WARNING</div>
+<div class="decision-wrapper"><div class="decision" id="audioDecision">---</div></div>
+<div id="audioReasons">Awaiting signal input...</div>
+<table id="audioMetrics"></table>
+<div class="log-status" id="audioLog">LOG SAVED</div>
+</div>
+</div>
+<div class="sensor-box">
+<h2>Spec/Contract Analyzer</h2>
+<textarea id="textInput" placeholder="[INSERT CONTRACT/SPEC DATA HERE]&#10;&#10;Example: 「サーバーは99.9%稼働率を保証し、MTBFは10000時間以上。障害復旧SLAは4時間以内とする。」"></textarea>
+<button id="textBtn">EXECUTE BOUNDARY SCAN</button>
+<div id="textResult" class="result">
+<div class="alert-box" id="textAlert">⚠ WARNING</div>
+<div class="decision-wrapper"><div class="decision" id="textDecision">---</div></div>
+<div id="textReasons">Awaiting document input...</div>
+<table id="textMetrics"></table>
+<div class="log-status" id="textLog">LOG SAVED</div>
+</div>
+</div>
+</div>
+<div class="footer-info">DANGER SENSOR v1.0 | Three-Pillar Protocol: Pinching・Boundary Temporal Asymmetry・Readout<br>Logs: Browser LocalStorage (export via Console: `dangerSensor.exportLogs()`)</div>
+<script>
+const P={STRICT:{audio:{CUT:{clip_rate:0.0001,true_peak_db:-0.3,crest_db_min:6.0,dropout_count:1},HOLD:{clip_rate:0.00001,true_peak_db:-0.5,crest_db_min:8.0,transient_density:30}},text:{CUT:{ambiguity_score:1.5,text_len_min:20},HOLD:{ambiguity_score:1.0,numeric_min:3}}},DEFAULT:{audio:{CUT:{clip_rate:0.001,true_peak_db:-0.1,crest_db_min:3.0,dropout_count:1},HOLD:{clip_rate:0.0001,true_peak_db:-0.3,crest_db_min:6.0,transient_density:40}},text:{CUT:{ambiguity_score:2.5,text_len_min:10},HOLD:{ambiguity_score:1.5,numeric_min:2}}},LENIENT:{audio:{CUT:{clip_rate:0.01,true_peak_db:0.0,crest_db_min:2.0,dropout_count:3},HOLD:{clip_rate:0.001,true_peak_db:-0.1,crest_db_min:4.0,transient_density:60}},text:{CUT:{ambiguity_score:4.0,text_len_min:5},HOLD:{ambiguity_score:2.5,numeric_min:1}}}};
+let preset='DEFAULT',T=P[preset];
+document.querySelectorAll('.preset-btn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.preset-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');preset=b.dataset.preset;T=P[preset]}));
+const ctx=new(window.AudioContext||window.webkitAudioContext)();
+const DS={logs:[],save(type,dec,reasons,metrics,path){const ts=new Date().toISOString().replace(/[-:]/g,'').replace('T','_').split('.')[0];const log={timestamp:ts,preset,type,decision:dec,reasons,metrics,input_path:path||`text_len_${metrics.text_len||'N/A'}`};this.logs.push(log);try{const ex=JSON.parse(localStorage.getItem('dangerSensor_logs')||'[]');ex.push(log);localStorage.setItem('dangerSensor_logs',JSON.stringify(ex.slice(-100)))}catch(e){console.warn('LocalStorage fail:',e)}return ts},export(){const logs=JSON.parse(localStorage.getItem('dangerSensor_logs')||'[]');const blob=new Blob([JSON.stringify(logs,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`dangerSensor_logs_${new Date().toISOString().split('T')[0]}.json`;a.click();URL.revokeObjectURL(url)}};
+window.dangerSensor={exportLogs:()=>DS.export()};
+async function procAudio(file){let dec,vio,met,path=file.name;try{const arr=await file.arrayBuffer();let buf;try{buf=await ctx.decodeAudioData(arr.slice(0))}catch(e){throw new Error('DECODE_FAIL')}const ch=buf.getChannelData(0),sr=buf.sampleRate,dur=buf.duration;let sumSq=0,peak=0,clip=0,zc=0,drop=0,trans=0;const clipT=0.999,dropT=0.001,dropMin=Math.floor(0.03*sr);let silence=0;for(let i=0;i<ch.length;i++){const abs=Math.abs(ch[i]);sumSq+=abs*abs;if(abs>peak)peak=abs;if(abs>=clipT)clip++;if(i>0&&ch[i]*ch[i-1]<0)zc++;if(abs<dropT){silence++;if(silence===dropMin)drop++}else{silence=0}if(i>0&&Math.abs(ch[i]-ch[i-1])>0.5)trans++}const rms=Math.sqrt(sumSq/ch.length),clipR=clip/ch.length,db=v=>20*Math.log10(Math.max(v,1e-12)),peakDb=db(peak),crestDb=db(peak/Math.max(rms,1e-12)),transD=trans/dur;met={duration_sec:dur.toFixed(2),clip_rate:clipR.toFixed(6),true_peak_db:peakDb.toFixed(2),crest_factor_db:crestDb.toFixed(2),dropout_count:drop,transient_density:transD.toFixed(1),zcr_per_sec:(zc/dur).toFixed(0)};vio=[];dec="PASS";const t=T.audio;if(clipR>t.CUT.clip_rate){vio.push(`CLIP_RATE_VIOLATION (${clipR.toFixed(6)} > ${t.CUT.clip_rate})`);dec="CUT"}if(peakDb>t.CUT.true_peak_db){vio.push(`PEAK_OVERFLOW (${peakDb.toFixed(2)}dB > ${t.CUT.true_peak_db}dB)`);dec="CUT"}if(crestDb<t.CUT.crest_db_min){vio.push(`CREST_COLLAPSE (${crestDb.toFixed(2)}dB < ${t.CUT.crest_db_min}dB)`);dec="CUT"}if(drop>=t.CUT.dropout_count){vio.push(`DATA_DROPOUT_DETECTED (count=${drop})`);dec="CUT"}if(dec==="PASS"){if(clipR>t.HOLD.clip_rate){vio.push(`MINOR_CLIPPING (${clipR.toFixed(6)})`);dec="HOLD"}if(peakDb>t.HOLD.true_peak_db){vio.push(`PEAK_WARNING (${peakDb.toFixed(2)}dB)`);dec="HOLD"}if(crestDb<t.HOLD.crest_db_min){vio.push(`DYNAMICS_REDUCED (${crestDb.toFixed(2)}dB)`);dec="HOLD"}if(transD>t.HOLD.transient_density){vio.push(`TEMPORAL_ASYMMETRY (${transD.toFixed(1)}/s)`);dec="HOLD"}}}catch(e){dec="CUT";vio=[`DECODE_FAIL (${e.message})`];met={error:e.message,file:file.name}}const ts=DS.save('audio',dec,vio,met,path);render('audio',dec,vio,met,ts)}
+function procText(){const txt=document.getElementById('textInput').value;if(!txt.trim()){alert("NO DATA DETECTED");return}let dec,vio,met;try{const kA=[/ケースバイケース/g,/柔軟/g,/最適化/g,/AIで/g,/現場次第/g,/よしなに/g,/状況に応じて/g,/ベストエフォート/g,/検討/g,/適宜/g,/なるべく/g];const kN=[/\d+ms/gi,/\d+dB/gi,/\d+%/gi,/\d+Hz/gi,/\d+時間/gi,/SLA/gi,/MTBF/gi,/閾値/gi,/スループット/gi,/レイテンシ/gi,/稼働率/gi,/保証値/gi];const kR=[/保証/g,/範囲/g,/除外/g,/復旧/g,/監視/g,/責任/g,/合意/g,/仕様/g,/義務/g];const cnt=arr=>arr.reduce((a,re)=>a+(txt.match(re)||[]).length,0);const L=txt.length,cA=cnt(kA),cN=cnt(kN),cR=cnt(kR),rA=(cA/L)*1000;met={text_len:L,ambiguity_score:rA.toFixed(2),numeric_count:cN,responsibility_count:cR,amb_keyword_count:cA};vio=[];dec="PASS";const t=T.text;if(L<t.CUT.text_len_min){vio.push(`INSUFFICIENT_DATA (len=${L} < ${t.CUT.text_len_min})`);dec="CUT"}if(rA>t.CUT.ambiguity_score&&cN===0){vio.push(`POEM_SPEC_RISK (amb=${rA.toFixed(2)} > ${t.CUT.ambiguity_score}, no numbers)`);dec="CUT"}if(dec==="PASS"){if(rA>t.HOLD.ambiguity_score){vio.push(`AMBIGUITY_WARNING (score=${rA.toFixed(2)})`);dec="HOLD"}if(cN>0&&cR===0){vio.push(`NUMBERS_NO_CONTRACT (num=${cN}, resp=0)`);dec="HOLD"}if(cR>0&&cN===0){vio.push(`CONTRACT_NO_NUMBERS (resp=${cR}, num=0)`);dec="HOLD"}}}catch(e){dec="CUT";vio=[`TEXT_DECODE_FAIL (${e.message})`];met={error:e.message,text_len:txt.length}}const ts=DS.save('text',dec,vio,met);render('text',dec,vio,met,ts)}
+function render(type,dec,vio,met,ts){const rDiv=document.getElementById(type+'Result'),dDiv=document.getElementById(type+'Decision'),rDiv2=document.getElementById(type+'Reasons'),mTab=document.getElementById(type+'Metrics'),aDiv=document.getElementById(type+'Alert'),lDiv=document.getElementById(type+'Log');rDiv.style.display='block';dDiv.textContent=dec;dDiv.className='decision '+dec;if(dec==='CUT'){aDiv.textContent='⚠ CRITICAL: '+(vio[0]||'UNKNOWN');aDiv.classList.add('show')}else if(dec==='HOLD'){aDiv.textContent='⚠ WARNING: BOUNDARY VIOLATION';aDiv.classList.add('show')}else{aDiv.classList.remove('show')}rDiv2.textContent=vio.length>0?vio.join(' // '):'NO BOUNDARY VIOLATIONS DETECTED';mTab.innerHTML='';const t=type==='audio'?T.audio:T.text;for(const[k,v]of Object.entries(met)){const tr=document.createElement('tr');const kCell=`<td>${k.replace(/_/g,' ')}</td>`;let cls='';if(type==='audio'){if(k==='clip_rate'&&parseFloat(v)>t.CUT.clip_rate)cls='violation';else if(k==='true_peak_db'&&parseFloat(v)>t.CUT.true_peak_db)cls='violation';else if(k==='crest_factor_db'&&parseFloat(v)<t.CUT.crest_db_min)cls='violation';else if(k==='dropout_count'&&v>=t.CUT.dropout_count)cls='violation';else if(k==='clip_rate'&&parseFloat(v)>t.HOLD.clip_rate)cls='warning';else if(k==='transient_density'&&parseFloat(v)>t.HOLD.transient_density)cls='warning'}else{if(k==='text_len'&&v<t.CUT.text_len_min)cls='violation';else if(k==='ambiguity_score'&&parseFloat(v)>t.CUT.ambiguity_score)cls='violation';else if(k==='ambiguity_score'&&parseFloat(v)>t.HOLD.ambiguity_score)cls='warning'}tr.innerHTML=kCell+`<td class="${cls}">${v}</td>`;mTab.appendChild(tr)}lDiv.textContent=`LOG SAVED: ${ts}`;lDiv.classList.add('show')}
+const drop=document.getElementById('audioDrop'),inp=document.getElementById('audioInput');
+drop.onclick=()=>inp.click();
+inp.onchange=e=>{if(e.target.files[0])procAudio(e.target.files[0])};
+drop.ondragover=e=>{e.preventDefault();drop.classList.add('dragover')};
+drop.ondragleave=()=>drop.classList.remove('dragover');
+drop.ondrop=e=>{e.preventDefault();drop.classList.remove('dragover');if(e.dataTransfer.files[0])procAudio(e.dataTransfer.files[0])};
+document.getElementById('textBtn').onclick=procText;
+</script>
+</body>
+</html>
