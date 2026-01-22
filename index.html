@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,7 +73,7 @@
         animation: glitch 3s infinite alternate-reverse;
     }
     h1::after {
-        content: "PINCHING PROTOCOL ACTIVE";
+        content: "QA GATE ACTIVE";
         position: absolute;
         bottom: -25px;
         right: 0;
@@ -83,7 +83,7 @@
         animation: blink 2s infinite;
     }
     h1::before {
-        content: "◢◣ PHYSICAL BOUNDARY DETECTION ◥◤";
+        content: "◢◣ LOCAL QA GATE ACTIVE ◥◤";
         position: absolute;
         top: -20px;
         left: 50%;
@@ -92,6 +92,17 @@
         color: var(--accent-cyan);
         opacity: 0.5;
         letter-spacing: 0.3em;
+    }
+
+    .header-note {
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        color: var(--text-primary);
+        opacity: 0.7;
+        margin-top: -5px;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        text-align: center;
     }
 
     @keyframes glitch {
@@ -552,7 +563,10 @@
 </style>
 </head>
 <body>
-<h1>Danger Sensor v1.0 // Physical Boundary Protocol</h1>
+<h1>Danger Sensor v1.0 // LOCAL QA GATE PROTOCOL</h1>
+<div class="header-note">
+    No audio is uploaded by default. Analysis runs locally in your browser.
+</div>
 <button id="manualBtn">? SYSTEM MANUAL</button>
 <div class="preset-bar">
     <button class="preset-btn" data-preset="STRICT">STRICT</button>
@@ -570,7 +584,7 @@
             <input type="file" id="audioInput" accept=".wav" style="display:none">
         </div>
         <div id="audioResult" class="result">
-            <div class="alert-box" id="audioAlert">⚠ WARNING: PHYSICAL CORRUPTION DETECTED</div>
+            <div class="alert-box" id="audioAlert">⚠ WARNING: SIGNAL CORRUPTION DETECTED</div>
             <div class="decision-wrapper"><div class="decision" id="audioDecision">---</div></div>
             <div id="audioReasons">Awaiting signal input...</div>
             <table id="audioMetrics"></table>
@@ -581,7 +595,7 @@
     <div class="sensor-box">
         <h2>Spec/Contract Analyzer</h2>
         <textarea id="textInput" placeholder="[INSERT CONTRACT/SPEC DATA HERE]&#10;&#10;Example: The server guarantees 99.9% uptime, with an MTBF of 10,000 hours or more. The disaster recovery SLA shall be within 4 hours."></textarea>
-        <button id="textBtn">EXECUTE BOUNDARY SCAN</button>
+        <button id="textBtn">EXECUTE CONSTRAINT SCAN</button>
         <div id="textResult" class="result">
             <div class="alert-box" id="textAlert">⚠ WARNING: SPECIFICATION FAILURE</div>
             <div class="decision-wrapper"><div class="decision" id="textDecision">---</div></div>
@@ -598,35 +612,32 @@
 
         <div class="manual-section">
             <h3>1. CORE CONCEPT</h3>
-            <p>This sensor detects "Physical Boundaries" (Geometry), not Qualia. It acts as a gatekeeper to reject corrupted data before human review.</p>
+            <p>This sensor detects measured signal constraints via deterministic metrics. It acts as a gatekeeper to reject corrupted data before human review.</p>
         </div>
 
         <div class="manual-section">
             <h3>2. DECISION CODES</h3>
             <ul>
-                <li><span class="tag cut">CUT</span> <strong>CRITICAL FAILURE:</strong> Immediate rejection required. (e.g., Clipping > 0.1%, No numbers in spec)</li>
-                <li><span class="tag hold">HOLD</span> <strong>WARNING:</strong> Boundary violation detected. Human verification needed. (e.g., Suspicious dynamics, Missing responsibility clauses)</li>
-                <li><span class="tag pass">PASS</span> <strong>CLEAN:</strong> Data is within the defined physical safety protocol.</li>
+                <li><span class="tag cut">CUT</span> <strong>CRITICAL FAILURE:</strong>Immediate rejection required. (e.g., clipping > 0.1%, out-of-spec metrics)</li>
+                <li><span class="tag hold">HOLD</span> <strong>WARNING:</strong>Anomaly detected. Human verification needed. (e.g., suspicious dynamics, missing required fields)</li>
+                <li><span class="tag pass">PASS</span> <strong>CLEAN:</strong> Data is within the defined QA protocol.</li>
             </ul>
         </div>
 
         <div class="manual-section">
             <h3>3. PRESETS</h3>
             <ul>
-                <li><strong>STRICT:</strong> For Broadcast/Finance. Zero tolerance.</li>
-                <li><strong>DEFAULT:</strong> Standard Production balance.</li>
-                <li><strong>LENIENT:</strong> For Demos/Roughs. Prevents only fatal errors.</li>
+                <li><strong>STRICT:</strong> Broadcast/finance-grade tolerance.</li>
+                <li><strong>DEFAULT:</strong> Standard production balance.</li>
+                <li><strong>LENIENT:</strong> Demos/roughs. Blocks only fatal errors.</li>
             </ul>
-        </div>
-        <div style="text-align:center; font-size:0.8em; color:#666; margin-top:20px;">
-            DANGER SENSOR v1.0 // THREE-PILLAR PROTOCOL
         </div>
     </div>
 </div>
 
 <div class="footer-info">
-    DANGER SENSOR v1.0 | Three-Pillar Protocol: Pinching・Boundary Temporal Asymmetry・Readout<br>
-    Logs: Browser LocalStorage (export via Console: `dangerSensor.exportLogs()`)
+    DANGER SENSOR v1.0 | Deterministic Local QA Gate (Contraction / Constraint Check / Consistency)<br>
+    Logs: stored locally in your browser (LocalStorage). Export: `dangerSensor.exportLogs()`
 </div>
 <footer>
     <div class="footer-bottom">
@@ -838,7 +849,7 @@ async function processAudio(file) {
                 decision = "HOLD";
             }
             if (transientDensity > T.HOLD.transient_density) {
-                violations.push(`TEMPORAL_ASYMMETRY (${transientDensity.toFixed(1)}/s)`);
+                violations.push(`TEMPORAL_SPIKINESS (${transientDensity.toFixed(1)}/s)`);
                 decision = "HOLD";
             }
         }
@@ -951,13 +962,13 @@ function renderResult(type, decision, violations, metrics, timestamp) {
         alertDiv.textContent = "⚠ CRITICAL: " + (violations[0] || 'UNKNOWN');
         alertDiv.classList.add("show");
     } else if (decision === "HOLD") {
-        alertDiv.textContent = "⚠ WARNING: BOUNDARY VIOLATION";
+        alertDiv.textContent = "⚠ WARNING: CONSTRAINT VIOLATION";
         alertDiv.classList.add("show");
     } else {
         alertDiv.classList.remove("show");
     }
     
-    reasDiv.textContent = violations.length > 0 ? violations.join(" // ") : "NO BOUNDARY VIOLATIONS DETECTED";
+    reasDiv.textContent = violations.length > 0 ? violations.join(" // ") : "NO CONSTRAINT VIOLATIONS DETECTED";
     
     metTab.innerHTML = "";
     const T = type === "audio" ? currentThresholds.audio : currentThresholds.text;
@@ -1020,6 +1031,7 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+document.getElementById('copyright-year').textContent = new Date().getFullYear();
 </script>
 </body>
-</html><!DOCTYPE html>
+</html>
