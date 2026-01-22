@@ -1,4 +1,4 @@
-# 🛡️ Danger Sensor v1.0 // Physical Boundary Protocol
+# 🛡️ Danger Sensor v1.0 // LOCAL QA GATE PROTOCOL
 
 A specialized **browser-based diagnostic tool** designed to detect physical corruption in audio waveforms and logical "landmines" in text specifications. It functions as an objective gatekeeper using **endpoint-conditional path contraction (as logged)**.
 
