@@ -1,13 +1,13 @@
 # 🛡️ Danger Sensor v1.0 // LOCAL QA GATE PROTOCOL
 
-A specialized **browser-based diagnostic tool** designed to detect physical corruption in audio waveforms and logical "landmines" in text specifications. It functions as an objective gatekeeper using **endpoint-conditional path contraction (as logged)**.
+A specialized **browser-based diagnostic tool** designed to detect signal corruption in audio waveforms and logical risks in text specifications. It functions as an objective gatekeeper using **deterministic consistency checks (as logged)**.
 
 **Core scoring is deterministic and local: the same input yields identical scores. Optional services (e.g., transcription) never affect scoring. Every decision is traceable to versioned rules and measured features recorded in the audit log.**
 
 * **Audio Scan**: Detects clipping, peak overflows, and data dropouts
 * **Text Scan**: Analyzes ambiguity, numerical density, and responsibility gaps
 * **Privacy-First**: Core scoring is local and deterministic; your data remains within the local boundary
-* **Technical Framework**: Implementation of **Endpoint-conditional contraction**, **Predictability gap analysis**, and **Consistency gating**
+* **Technical Framework**: Implementation of **Rule-based consistency gating under fixed constraints**
 
 No installation required — a single-file solution for professional risk management.
 
@@ -25,7 +25,7 @@ No installation required — a single-file solution for professional risk manage
 
 ## 🔍 Technical Details: Detection Logic
 
-The Text Analyzer operates by calculating the "Boundary Density" of the input document using **rule-based thresholds (versioned) with no ML in scoring**. It categorizes keywords into three distinct layers to determine if a specification has a valid "Engineering Boundary."
+The Text Analyzer operates by calculating the "Constraint Density" of the input document using **rule-based thresholds (versioned) with no ML in scoring**. It categorizes keywords into three distinct layers to determine if a specification has a valid "Engineering Constraints."
 
 ### 1. Ambiguity Detection (The "Poem" Filter)
 
@@ -50,7 +50,7 @@ Identifies legal and operational boundaries that define the "In-Scope" and "Out-
 
 ### 4. Decision Matrix
 
-* **RED (CUT)**: High Ambiguity + Zero Numerics. The endpoint-conditional path contraction fails to converge.
+* **RED (CUT)**: High Ambiguity + Zero Numerics. The consistency checks fail to converge under current constraints.
 * **ORANGE (HOLD)**: Numerics present but no Responsibility defined (or vice-versa). The boundary is incomplete.
 * **GREEN (PASS)**: High Numerical density balanced with **Consistency / residual gate** validation.
 
@@ -94,4 +94,4 @@ For collaboration, technical inquiries, or licensing:
 ---
 
 © 2026 DIMProductions.
-This tool is part of a protocol for secure data and contract validation.
+This tool supports secure data and contract validation workflows.
