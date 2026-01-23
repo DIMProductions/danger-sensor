@@ -389,13 +389,13 @@
         font-size: 0.9rem;
         text-align: center;
         position: relative;
-        padding-left: 20px;
     }
     #audioReasons::before, #textReasons::before { 
         content: "[DIAGNOSTIC] "; 
         opacity: 0.7;
-        position: absolute;
-        left: 0;
+        display: block;
+        font-size: 0.7rem;
+        margin-bottom: 5px;
         animation: blink 1.5s infinite;
     }
 
@@ -560,6 +560,29 @@
             margin-top: 10px;
         }
     }
+
+    #clearTextBtn {
+        position: absolute;
+        top: 25px;  
+        right: 25px;
+        background: rgba(0,0,0,0.6);
+        border: 1px solid var(--danger-red);
+        color: var(--danger-red);
+        font-family: inherit;
+        font-size: 0.7rem;
+        padding: 4px 10px;
+        cursor: pointer;
+        opacity: 0.6;
+        transition: 0.3s;
+        z-index: 10;
+        letter-spacing: 1px;
+    }
+    #clearTextBtn:hover {
+        background: var(--danger-red);
+        color: #000;
+        opacity: 1;
+        box-shadow: 0 0 10px var(--danger-red);
+    }
 </style>
 </head>
 <body>
@@ -594,6 +617,7 @@
 
     <div class="sensor-box">
         <h2>Spec/Contract Analyzer</h2>
+        <button id="clearTextBtn" title="Clear text and reset scan">✖ CLEAR INPUT</button>
         <textarea id="textInput" placeholder="[INSERT CONTRACT/SPEC DATA HERE]&#10;&#10;Example: The server guarantees 99.9% uptime, with an MTBF of 10,000 hours or more. The disaster recovery SLA shall be within 4 hours."></textarea>
         <button id="textBtn">EXECUTE CONSTRAINT SCAN</button>
         <div id="textResult" class="result">
@@ -874,19 +898,33 @@ function processText() {
     let decision, violations, metrics;
 
     try {
+        // === KEYWORDS (EN + JP) ===
+        // NOTE: Your test results showed JP strings were not being counted (resp/amb=0).
+        // Fix: include JP regex in the same lists so counts work for Japanese input too.
         const kw_ambiguous = [
-            /case-by-case/gi, /flexible/gi, /optimize/gi, /AI-driven/gi, 
-            /at discretion/gi, /as appropriate/gi, /depending on/gi, 
-            /best-effort/gi, /consider/gi, /as needed/gi, /if possible/gi
+            // EN
+            /case-by-case/gi, /flexible/gi, /optimi[sz]e/gi, /AI[-\s]?driven/gi,
+            /at discretion/gi, /as appropriate/gi, /depending on/gi,
+            /best[-\s]?effort/gi, /consider/gi, /as needed/gi, /if possible/gi,
+            // JP
+            /ケースバイケース/g, /柔軟/g, /最適化/g, /AIで/g, /現場次第/g,
+            /よしなに/g, /状況に応じて/g, /ベストエフォート/g, /検討/g,
+            /適宜/g, /なるべく/g
         ];
         const kw_numeric = [
+            // EN / COMMON
             /\d+ms/gi, /\d+dB/gi, /\d+%/gi, /\d+Hz/gi, /\d+\s?hours?/gi,
-            /SLA/gi, /MTBF/gi, /threshold/gi, /throughput/gi, 
-            /latency/gi, /uptime/gi, /guaranteed value/gi
+            /SLA/gi, /MTBF/gi, /threshold/gi, /throughput/gi,
+            /latency/gi, /uptime/gi, /guaranteed value/gi,
+            // JP
+            /\d+時間/gi, /閾値/gi, /スループット/gi, /レイテンシ/gi, /稼働率/gi, /保証値/gi
         ];
         const kw_resp = [
-            /guarantee/gi, /scope/gi, /exclusion/gi, /recovery/gi, /monitoring/gi, 
-            /liability/gi, /agreement/gi, /specification/gi, /obligation/gi
+            // EN
+            /guarantee/gi, /scope/gi, /exclusion/gi, /recovery/gi, /monitoring/gi,
+            /liability/gi, /agreement/gi, /specification/gi, /obligation/gi,
+            // JP
+            /保証/g, /範囲/g, /除外/g, /復旧/g, /監視/g, /責任/g, /合意/g, /仕様/g, /義務/g
         ];
 
         const count = (regexList) => regexList.reduce((acc, re) => acc + (text.match(re)||[]).length, 0);
@@ -1032,6 +1070,15 @@ window.onclick = function(event) {
     }
 }
 document.getElementById('copyright-year').textContent = new Date().getFullYear();
+
+// === CLEAR TEXT LOGIC ===
+    document.getElementById("clearTextBtn").onclick = function() {
+        const ta = document.getElementById("textInput");
+        ta.value = "";
+        ta.focus();        
+        document.getElementById("textResult").style.display = "none";
+        document.getElementById("textAlert").classList.remove("show");
+    };
 </script>
 </body>
 </html>
